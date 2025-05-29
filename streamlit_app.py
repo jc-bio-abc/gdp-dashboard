@@ -1,7 +1,7 @@
 import streamlit as st
 import openai
 
-openai.api_key = st.secrets["openai"]["api_key"]
+client = openai.OpenAI(api_key=st.secrets["openai"]["api_key"])
 
 def analyser_annonce(description):
     prompt = f"""
@@ -10,11 +10,13 @@ def analyser_annonce(description):
 
     Est-ce une bonne affaire ? Donne un score d'opportunité sur 100 et explique pourquoi.
     """
+
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.5,
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
@@ -38,4 +40,4 @@ if st.button("Analyser avec l'IA"):
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.warning("Merci de coller une description d'annonce.")  
+        st.warning("Merci de coller une description d'annonce.")
